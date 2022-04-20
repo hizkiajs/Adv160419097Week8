@@ -8,7 +8,7 @@ import id.web.rpgfantasy.todoapp.R
 import id.web.rpgfantasy.todoapp.model.Todo
 import kotlinx.android.synthetic.main.todo_item_list.view.*
 
-class TodoListAdapter(val todoList: ArrayList<Todo>): RecyclerView.Adapter<TodoListAdapter.TodoViewHolder>() {
+class TodoListAdapter(val todoList: ArrayList<Todo>, val adapterOnClick: (Todo) -> Unit): RecyclerView.Adapter<TodoListAdapter.TodoViewHolder>() {
     class TodoViewHolder(var view: View): RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
@@ -20,6 +20,10 @@ class TodoListAdapter(val todoList: ArrayList<Todo>): RecyclerView.Adapter<TodoL
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.view.checkTask.setText(todoList[position].title.toString())
+
+        holder.view.checkTask.setOnCheckedChangeListener { compoundButton, b ->
+            adapterOnClick(todoList[position])
+        }
     }
 
     override fun getItemCount(): Int {
