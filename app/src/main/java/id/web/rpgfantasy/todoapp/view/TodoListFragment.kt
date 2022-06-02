@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,7 +22,12 @@ import kotlinx.android.synthetic.main.fragment_todo_list.*
  */
 class TodoListFragment : Fragment() {
     private lateinit var viewModel: ListTodoViewModel
-    private val todoListAdapter = TodoListAdapter(arrayListOf(), { item -> viewModel.clearTask(item) })
+    private val todoListAdapter = TodoListAdapter(arrayListOf()){
+        if (it.done == 0)
+            viewModel.updateCheckTodo(it.uuid)
+            Toast.makeText(view?.context, "Todo Deleted.", Toast.LENGTH_SHORT).show()
+            observeViewModel()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

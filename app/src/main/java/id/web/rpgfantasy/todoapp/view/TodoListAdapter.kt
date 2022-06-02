@@ -3,6 +3,7 @@ package id.web.rpgfantasy.todoapp.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import id.web.rpgfantasy.todoapp.R
 import id.web.rpgfantasy.todoapp.model.Todo
@@ -19,10 +20,24 @@ class TodoListAdapter(val todoList: ArrayList<Todo>, val adapterOnClick: (Todo) 
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        holder.view.checkTask.setText(todoList[position].title.toString())
+        val todo = todoList[position]
 
-        holder.view.checkTask.setOnCheckedChangeListener { compoundButton, b ->
-            adapterOnClick(todoList[position])
+        with(holder.view){
+            val priority = when(todo.priority){
+                1 -> "low"
+                2 -> "medium"
+                else -> "HIGH"
+            }
+            checkTask.text = "[${priority}] ${todo.title}"
+
+            checkTask.setOnCheckedChangeListener { compoundButton, value ->
+                if (value) adapterOnClick(todo)
+            }
+
+            imgEdit.setOnClickListener{
+                val action = TodoListFragmentDirections.actionEditTodoFragment(todo.uuid)
+                Navigation.findNavController(it).navigate(action)
+            }
         }
     }
 

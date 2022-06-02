@@ -7,21 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import id.web.rpgfantasy.todoapp.R
-import id.web.rpgfantasy.todoapp.model.Todo
 import id.web.rpgfantasy.todoapp.viewmodel.DetailTodoViewModel
 import kotlinx.android.synthetic.main.fragment_create_todo.*
 
 /**
  * A simple [Fragment] subclass.
- * Use the [CreateTodoFragment.newInstance] factory method to
+ * Use the [EditTodoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CreateTodoFragment : Fragment() {
+class EditTodoFragment : Fragment() {
     private lateinit var viewModel: DetailTodoViewModel
 
     override fun onCreateView(
@@ -35,20 +33,39 @@ class CreateTodoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var radio = view.findViewById<RadioButton>(radioGroupPriority.checkedRadioButtonId)
-        var todo = Todo(txtTitle.text.toString(), txtNotes.text.toString(), radio.tag.toString().toInt())
-        val list = listOf(todo)
-
         viewModel = ViewModelProvider(this).get(DetailTodoViewModel::class.java)
+
+        val uuid = EditTodoFragmentArgs.fromBundle(requireArguments()).uuid
+
+        viewModel.fetch(uuid)
+        observeViewModel()
+
+        textJudulTodo.text = "Edit Todo"
+        btnAdd.text = "Save Changes"
 
         btnAdd.setOnClickListener {
             var radio = view.findViewById<RadioButton>(radioGroupPriority.checkedRadioButtonId)
-            var todo = Todo(txtTitle.text.toString(), txtNotes.text.toString(), radioGroupPriority.checkedRadioButtonId)
-            val list = listOf(todo)
-            viewModel.addTodo(list)
-            Toast.makeText(view.context, "Data added", Toast.LENGTH_LONG).show()
+            viewModel.update(
+                txtTitle.text.toString(),
+                txtNotes.text.toString(),
+                radio.tag.toString().toInt(),
+                uuid
+            )
+            Toast.makeText(view.context, "Todo Updated.", Toast.LENGTH_SHORT).show()
             Navigation.findNavController(it).popBackStack()
+        }
+    }
 
+    fun observeViewModel() {
+        viewModel.todoLD.observe(viewLifecycleOwner) {
+            txtTitle.setText(it.title)
+            txtNotes.setText(it.notes)
+
+            when (it.priority) {
+                1 -> radioLow.isChecked = true
+                2 -> radioMedium.isChecked = true
+                else -> radioHigh.isChecked = true
+            }
         }
     }
 }
