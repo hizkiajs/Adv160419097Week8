@@ -25,7 +25,7 @@ class TodoListFragment : Fragment() {
     private val todoListAdapter = TodoListAdapter(arrayListOf()){
         if (it.done == 0)
             viewModel.updateCheckTodo(it.uuid)
-            Toast.makeText(view?.context, "Todo Deleted.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(view?.context, "Todo Done.", Toast.LENGTH_SHORT).show()
             observeViewModel()
     }
 
